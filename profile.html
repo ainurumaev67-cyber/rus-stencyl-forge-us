@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Профиль — RUS Stencyl Forge</title>
+    <meta name="description" content="Ваш профиль на RUS Stencyl Forge. Управляйте своими ресурсами для Stencyl 4.0.4.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="color-scheme" content="light">
+
+    <!-- Шрифты: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <style>
+        :root {
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-text: #0f172a;
+            --color-text-secondary: #475569;
+            --color-text-tertiary: #94a3b8;
+            --color-text-inverse: #ffffff;
+            --color-accent: #2563eb;
+            --color-accent-hover: #1d4ed8;
+            --color-accent-light: #eff6ff;
+            --color-success: #10b981;
+            --color-success-light: #ecfdf5;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-error-light: #fef2f2;
+            --color-border: #e2e8f0;
+            --color-border-light: #f1f5f9;
+            --radius-xs: 6px;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+            --shadow-accent: 0 4px 14px rgba(37,99,235,0.25);
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.8125rem;
+            --font-size-base: 0.875rem;
+            --font-size-md: 0.9375rem;
+            --font-size-lg: 1.0625rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --line-height-tight: 1.25;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.625;
+            --letter-spacing-tight: -0.02em;
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            background: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: var(--color-accent); color: white; }
+        :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; border-radius: var(--radius-xs); }
+
+        @media (hover: hover) {
+            ::-webkit-scrollbar { width: 6px; }
+            ::-webkit-scrollbar-track { background: transparent; }
+            ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        }
+
+        /* ==================== ШАПКА ==================== */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            border-bottom: 1px solid var(--color-border);
+            backdrop-filter: blur(16px);
+            height: 60px;
+        }
+        .header-inner {
+            max-width: 1000px; margin: 0 auto; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; gap: 12px;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 8px;
+            text-decoration: none; color: var(--color-text);
+            font-weight: 700; font-size: var(--font-size-lg);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .logo:hover { opacity: 0.8; }
+        .logo-icon {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem;
+        }
+        .nav { display: flex; align-items: center; gap: 6px; }
+        .nav-link {
+            padding: 7px 14px; border-radius: var(--radius-full);
+            text-decoration: none; font-weight: 500;
+            font-size: var(--font-size-sm); color: var(--color-text-secondary);
+            transition: all var(--transition-fast);
+            border: 1px solid transparent; background: transparent;
+            font-family: inherit; cursor: pointer; white-space: nowrap;
+        }
+        .nav-link:hover { background: var(--color-border-light); color: var(--color-text); }
+        .nav-link.active { background: var(--color-accent); color: white; font-weight: 600; }
+        .btn-logout {
+            padding: 7px 16px; border-radius: var(--radius-full);
+            font-weight: 600; font-size: var(--font-size-sm);
+            cursor: pointer; border: 1px solid var(--color-error);
+            background: white; color: var(--color-error);
+            font-family: inherit; transition: all var(--transition-fast);
+        }
+        .btn-logout:hover { background: var(--color-error-light); }
+
+        /* ==================== КОНТЕНТ ==================== */
+        .main {
+            flex: 1; padding: 40px 20px 56px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .profile-card {
+            width: 100%; max-width: 500px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 48px 36px;
+            text-align: center;
+            animation: cardIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .avatar {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700;
+            color: white;
+            margin: 0 auto 20px;
+            border: 3px solid var(--color-accent-light);
+            box-shadow: 0 0 0 6px var(--color-accent-light);
+        }
+        .name {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            letter-spacing: var(--letter-spacing-tight);
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        .email {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-base);
+            margin-bottom: 28px;
+            word-break: break-word;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .stat {
+            background: var(--color-border-light);
+            padding: 16px 12px;
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+        }
+        .stat:hover { background: var(--color-accent-light); }
+        .stat-value {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            letter-spacing: var(--letter-spacing-tight);
+            color: var(--color-accent);
+        }
+        .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: 2px;
+        }
+
+        .actions {
+            display: flex; gap: 10px; flex-direction: column;
+        }
+        .btn-primary {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 24px; border-radius: var(--radius);
+            font-weight: 600; font-size: var(--font-size-md);
+            cursor: pointer; border: none;
+            background: var(--color-accent); color: white;
+            font-family: inherit; transition: all var(--transition-fast);
+            text-decoration: none; width: 100%;
+            box-shadow: var(--shadow-accent);
+        }
+        .btn-primary:hover { background: var(--color-accent-hover); }
+        .btn-outline {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; border-radius: var(--radius);
+            font-weight: 500; font-size: var(--font-size-sm);
+            cursor: pointer; border: 1px solid var(--color-border);
+            background: white; color: var(--color-text);
+            font-family: inherit; transition: all var(--transition-fast);
+            text-decoration: none; width: 100%;
+        }
+        .btn-outline:hover { background: var(--color-border-light); }
+
+        .footer {
+            text-align: center; padding: 20px;
+            color: var(--color-text-tertiary); font-size: var(--font-size-xs);
+            border-top: 1px solid var(--color-border-light);
+            background: var(--color-surface);
+        }
+        .footer a { color: var(--color-accent); text-decoration: none; }
+
+        @media (max-width: 480px) {
+            .profile-card { padding: 32px 20px; }
+            .stats { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== ШАПКА ==================== -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🧩</span> Stencyl Forge
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">📚 Каталог</a>
+                <a href="upload.html" class="nav-link">⬆️ Выложить</a>
+                <a href="profile.html" class="nav-link active">👤 Профиль</a>
+                <button class="btn-logout" onclick="handleLogout()">🚪 Выйти</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ==================== КАРТОЧКА ПРОФИЛЯ ==================== -->
+    <main class="main">
+        <div class="profile-card">
+            <!-- Аватар -->
+            <div class="avatar" id="profileAvatar">?</div>
+
+            <!-- Имя -->
+            <h1 class="name" id="profileName">Загрузка...</h1>
+
+            <!-- Почта -->
+            <p class="email" id="profileEmail">—</p>
+
+            <!-- Статистика -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="statUploaded">0</div>
+                    <div class="stat-label">Загружено</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statApproved">0</div>
+                    <div class="stat-label">Одобрено</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statDownloads">0</div>
+                    <div class="stat-label">Скачиваний</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statRating">0.0</div>
+                    <div class="stat-label">Рейтинг</div>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="actions">
+                <a href="upload.html" class="btn-primary">⬆️ Выложить ресурс</a>
+                <a href="index.html" class="btn-outline">📚 В каталог</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== ПОДВАЛ ==================== -->
+    <footer class="footer">
+        <p>RUS Stencyl Forge v4.0.4 · <a href="index.html">Каталог</a></p>
+    </footer>
+
+    <script>
+        let currentUser = null;
+
+        function handleLogout() {
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch(console.error);
+        }
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                // Не вошёл — показываем заглушку «Войдите»
+                document.getElementById('profileName').textContent = 'Вы не вошли';
+                document.getElementById('profileEmail').textContent = 'Войдите, чтобы видеть профиль';
+                document.getElementById('profileAvatar').textContent = '?';
+                document.getElementById('statUploaded').textContent = '—';
+                document.getElementById('statApproved').textContent = '—';
+                document.getElementById('statDownloads').textContent = '—';
+                document.getElementById('statRating').textContent = '—';
+                return;
+            }
+
+            currentUser = user;
+            const displayName = user.displayName || 'Разработчик';
+            const email = user.email || '';
+            const initial = displayName[0].toUpperCase();
+
+            document.getElementById('profileAvatar').textContent = initial;
+            document.getElementById('profileName').textContent = displayName;
+            document.getElementById('profileEmail').textContent = email;
+            document.title = `${displayName} — RUS Stencyl Forge`;
+
+            // Статистика пока нулевая — обновится когда появятся данные
+            document.getElementById('statUploaded').textContent = '0';
+            document.getElementById('statApproved').textContent = '0';
+            document.getElementById('statDownloads').textContent = '0';
+            document.getElementById('statRating').textContent = '0.0';
+        });
+    </script>
+</body>
+</html>

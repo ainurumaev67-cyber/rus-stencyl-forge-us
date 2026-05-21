@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Проект — RUS Stencyl Forge</title>
+    <meta name="description" content="Страница проекта RUS Stencyl Forge. Скачайте ресурс для Stencyl 4.0.4.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="color-scheme" content="light">
+
+    <!-- Шрифты: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <style>
+        /* ==================== ПЕРЕМЕННЫЕ ==================== */
+        :root {
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-text: #0f172a;
+            --color-text-secondary: #475569;
+            --color-text-tertiary: #94a3b8;
+            --color-text-inverse: #ffffff;
+            --color-accent: #2563eb;
+            --color-accent-hover: #1d4ed8;
+            --color-accent-pressed: #1e40af;
+            --color-accent-light: #eff6ff;
+            --color-accent-ring: rgba(37, 99, 235, 0.15);
+            --color-success: #10b981;
+            --color-success-light: #ecfdf5;
+            --color-warning: #f59e0b;
+            --color-warning-light: #fffbeb;
+            --color-error: #ef4444;
+            --color-error-light: #fef2f2;
+            --color-border: #e2e8f0;
+            --color-border-light: #f1f5f9;
+            --color-border-hover: #cbd5e1;
+            --radius-xs: 6px;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+            --shadow-xl: 0 20px 48px rgba(0,0,0,0.12);
+            --shadow-accent: 0 4px 14px rgba(37,99,235,0.25);
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.8125rem;
+            --font-size-base: 0.875rem;
+            --font-size-md: 0.9375rem;
+            --font-size-lg: 1.0625rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --line-height-tight: 1.25;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.625;
+            --letter-spacing-tight: -0.02em;
+            --letter-spacing-normal: -0.01em;
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ==================== СБРОС ==================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: var(--letter-spacing-normal);
+        }
+        ::selection {
+            background-color: var(--color-accent);
+            color: var(--color-text-inverse);
+        }
+        :focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+            border-radius: var(--radius-xs);
+        }
+
+        /* ==================== СВОЙ СКРОЛЛБАР ==================== */
+        @media (hover: hover) {
+            ::-webkit-scrollbar { width: 6px; height: 6px; }
+            ::-webkit-scrollbar-track { background-color: transparent; }
+            ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; transition: background-color var(--transition-fast); }
+            ::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+            ::-webkit-scrollbar-corner { background-color: transparent; }
+        }
+
+        /* ==================== ШАПКА ==================== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.92);
+            border-bottom: 1px solid var(--color-border);
+            backdrop-filter: saturate(180%) blur(16px);
+            -webkit-backdrop-filter: saturate(180%) blur(16px);
+            height: 64px;
+            transition: box-shadow var(--transition-normal);
+        }
+        .header.scrolled { box-shadow: var(--shadow-md); }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            gap: 16px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--color-text);
+            flex-shrink: 0;
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            letter-spacing: var(--letter-spacing-tight);
+            transition: opacity var(--transition-fast);
+        }
+        .logo:hover { opacity: 0.8; }
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+        .back-link:hover { color: var(--color-accent); }
+        .btn-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+        .btn-login:hover {
+            background-color: var(--color-accent-light);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+        .btn-login.logged-in {
+            background-color: var(--color-accent-light);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+        .user-dot {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        /* ==================== ОСНОВНОЙ КОНТЕНТ ==================== */
+        .main {
+            flex: 1;
+            padding: 32px 20px 56px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ==================== ХЛЕБНЫЕ КРОШКИ ==================== */
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+        .breadcrumbs a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        .breadcrumbs a:hover { color: var(--color-accent); }
+        .breadcrumbs .separator { opacity: 0.4; user-select: none; }
+
+        /* ==================== КАРТОЧКА ПРОЕКТА ==================== */
+        .project-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            animation: cardIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Изображение */
+        .project-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+            color: var(--color-text-tertiary);
+        }
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .project-image-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: var(--color-text-tertiary);
+            font-size: var(--font-size-base);
+        }
+
+        /* Тело карточки */
+        .project-body {
+            padding: 32px;
+        }
+        .project-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            background-color: var(--color-accent-light);
+            color: var(--color-accent);
+            margin-bottom: 16px;
+            letter-spacing: 0.02em;
+        }
+        .project-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            letter-spacing: var(--letter-spacing-tight);
+            line-height: var(--line-height-tight);
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+        .project-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+        .project-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .project-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--color-warning);
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+        }
+        .project-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .project-author-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.75rem;
+        }
+
+        /* Описание */
+        .project-description {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+            margin-bottom: 28px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Теги */
+        .project-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .project-tag {
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+            background-color: var(--color-border-light);
+            color: var(--color-text-secondary);
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+        .project-tag:hover {
+            background-color: var(--color-border);
+            color: var(--color-text);
+        }
+
+        /* Кнопки */
+        .project-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            border: none;
+            font-family: inherit;
+            background-color: var(--color-accent);
+            color: var(--color-text-inverse);
+            box-shadow: var(--shadow-accent);
+            letter-spacing: 0.01em;
+        }
+        .btn-download:hover {
+            background-color: var(--color-accent-hover);
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-2px);
+        }
+        .btn-download:active {
+            transform: translateY(0);
+            background-color: var(--color-accent-pressed);
+        }
+        .btn-rate {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--color-border);
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            font-family: inherit;
+        }
+        .btn-rate:hover {
+            border-color: var(--color-warning);
+            background-color: var(--color-warning-light);
+        }
+
+        /* ==================== СЕКЦИЯ "КАК ИСПОЛЬЗОВАТЬ" ==================== */
+        .info-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            padding: 28px 32px;
+            margin-top: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        .info-card-title {
+            font-weight: 600;
+            font-size: var(--font-size-lg);
+            margin-bottom: 16px;
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .info-card ol {
+            padding-left: 24px;
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+        }
+        .info-card ol li {
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+        .info-card ol li strong {
+            color: var(--color-text);
+        }
+
+        /* ==================== ПОХОЖИЕ ПРОЕКТЫ ==================== */
+        .similar-section {
+            margin-top: 32px;
+        }
+        .similar-title {
+            font-weight: 600;
+            font-size: var(--font-size-xl);
+            margin-bottom: 20px;
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        .similar-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-xs);
+        }
+        .similar-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-border-hover);
+        }
+        .similar-card-image {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: var(--color-border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            overflow: hidden;
+        }
+        .similar-card-image img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .similar-card-body {
+            padding: 12px 14px;
+            flex: 1;
+        }
+        .similar-card-title {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-tight);
+        }
+        .similar-card-footer {
+            padding: 10px 14px;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* ==================== ПОДВАЛ ==================== */
+        .footer {
+            text-align: center;
+            padding: 22px 20px;
+            color: var(--color-text-tertiary);
+            font-size: var(--font-size-xs);
+            border-top: 1px solid var(--color-border-light);
+            background-color: var(--color-surface);
+            letter-spacing: 0.02em;
+        }
+        .footer a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+        .footer a:hover { color: var(--color-accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+
+        /* ==================== АДАПТИВ ==================== */
+        @media (max-width: 768px) {
+            .project-body { padding: 24px 20px; }
+            .project-title { font-size: var(--font-size-2xl); }
+            .project-image { aspect-ratio: 4 / 3; font-size: 3.5rem; }
+            .similar-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .project-body { padding: 18px 14px; }
+            .project-title { font-size: var(--font-size-xl); }
+            .btn-download, .btn-rate { width: 100%; justify-content: center; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== ШАПКА ==================== -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo" aria-label="RUS Stencyl Forge — на главную">
+                <span class="logo-icon" aria-hidden="true">🧩</span>
+                Stencyl Forge
+            </a>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <a href="index.html" class="back-link">← В каталог</a>
+                <button class="btn-login" id="btnLogin" onclick="handleAuthClick()" aria-label="Войти в аккаунт">
+                    👤 Войти
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== ОСНОВНОЙ КОНТЕНТ ==================== -->
+    <main class="main">
+        <div class="container">
+            <!-- Хлебные крошки -->
+            <nav class="breadcrumbs" aria-label="Хлебные крошки">
+                <a href="index.html">Каталог</a>
+                <span class="separator">›</span>
+                <span id="breadcrumbCategory">Категория</span>
+                <span class="separator">›</span>
+                <span id="breadcrumbName" style="color:var(--color-text);">Проект</span>
+            </nav>
+
+            <!-- Карточка проекта -->
+            <article class="project-card">
+                <div class="project-image" id="projectImage">
+                    <div class="project-image-placeholder">
+                        <span>📦</span>
+                        <span>Загрузка...</span>
+                    </div>
+                </div>
+                <div class="project-body">
+                    <span class="project-category" id="projectCategory">📄 Категория</span>
+                    <h1 class="project-title" id="projectTitle">Название проекта</h1>
+                    
+                    <div class="project-meta">
+                        <span class="project-meta-item project-rating" id="projectRating">⭐ —</span>
+                        <span class="project-meta-item">📥 <span id="projectDownloads">0</span> скачиваний</span>
+                        <span class="project-meta-item">📅 <span id="projectDate">—</span></span>
+                    </div>
+
+                    <div class="project-author" style="margin-bottom:20px;">
+                        <span class="project-author-avatar" id="authorAvatar">?</span>
+                        <span style="font-weight:500;" id="projectAuthor">Неизвестный автор</span>
+                    </div>
+
+                    <p class="project-description" id="projectDescription">Описание загружается...</p>
+
+                    <div class="project-tags" id="projectTags"></div>
+
+                    <div class="project-actions">
+                        <a href="#" class="btn-download" id="btnDownload" download>
+                            📥 Скачать ресурс
+                        </a>
+                        <button class="btn-rate" id="btnRate" onclick="handleRate()">
+                            ⭐ Оценить
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Как использовать -->
+            <div class="info-card">
+                <h2 class="info-card-title">📘 Как использовать</h2>
+                <ol>
+                    <li>Скачайте файл, нажав кнопку <strong>«Скачать ресурс»</strong> выше.</li>
+                    <li>Откройте ваш проект в <strong>Stencyl 4.0.4</strong>.</li>
+                    <li>Нажмите <strong>«Вставить из...»</strong> (Paste From...) в верхнем меню.</li>
+                    <li>Выберите скачанный PNG-файл — ресурс появится в вашем проекте.</li>
+                </ol>
+            </div>
+
+            <!-- Похожие проекты -->
+            <div class="similar-section" id="similarSection">
+                <h2 class="similar-title">🔗 Похожие проекты</h2>
+                <div class="similar-grid" id="similarGrid">
+                    <p style="color:var(--color-text-tertiary);">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== ПОДВАЛ ==================== -->
+    <footer class="footer">
+        <p>RUS Stencyl Forge v4.0.4 · <a href="index.html">В каталог</a></p>
+    </footer>
+
+    <script>
+        // ==================== СОСТОЯНИЕ ====================
+        let currentUser = null;
+        let currentProject = null;
+
+        // ==================== FIREBASE AUTH ====================
+        function handleAuthClick() {
+            if (currentUser) {
+                auth.signOut().catch(console.error);
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function updateAuthUI(user) {
+            currentUser = user;
+            const btn = document.getElementById('btnLogin');
+            if (!btn) return;
+            if (user) {
+                const displayName = user.displayName || user.email || 'Пользователь';
+                const initial = displayName[0].toUpperCase();
+                btn.innerHTML = `<span class="user-dot">${initial}</span> ${displayName}`;
+                btn.classList.add('logged-in');
+            } else {
+                btn.innerHTML = '👤 Войти';
+                btn.classList.remove('logged-in');
+            }
+        }
+
+        auth.onAuthStateChanged(user => updateAuthUI(user));
+
+        // ==================== ЗАГРУЗКА ПРОЕКТА ====================
+        function getProjectFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const folder = params.get('folder');
+            
+            if (!folder) {
+                showNotFound('Проект не указан. Вернитесь в каталог и выберите проект.');
+                return null;
+            }
+
+            // Собираем данные из параметров URL
+            // В реальности эти данные приходят из _worker.js или описания папки
+            // Пока используем данные из URL
+            const name = params.get('name') || folder.replace('.RSF', '').replace(/-/g, ' ');
+            const category = params.get('category') || 'unknown';
+            const description = params.get('description') || 'Описание отсутствует.';
+            const author = params.get('author') || 'Неизвестный автор';
+            const tags = params.get('tags') ? params.get('tags').split(',') : [];
+            const rating = parseFloat(params.get('rating')) || 0;
+            const downloads = parseInt(params.get('downloads')) || 0;
+            const dateAdded = params.get('date') || new Date().toLocaleDateString('ru-RU');
+
+            return {
+                id: folder.replace('.RSF', '').replace(/\s+/g, '-').toLowerCase(),
+                folder: folder,
+                name: name,
+                description: description,
+                category: category,
+                author: author,
+                tags: tags,
+                iconUrl: `/${encodeURIComponent(folder)}/icon.png`,
+                fileUrl: `/${encodeURIComponent(folder)}/res.png`,
+                rating: rating,
+                downloads: downloads,
+                dateAdded: dateAdded
+            };
+        }
+
+        function renderProject(project) {
+            if (!project) return;
+
+            currentProject = project;
+
+            // Обновляем заголовок страницы
+            document.title = `${project.name} — RUS Stencyl Forge`;
+            document.querySelector('meta[name="description"]').setAttribute('content', 
+                `${project.name} — ${project.description.substring(0, 150)}`);
+
+            // Хлебные крошки
+            document.getElementById('breadcrumbCategory').textContent = getCategoryName(project.category);
+            document.getElementById('breadcrumbName').textContent = project.name;
+
+            // Изображение
+            const imageContainer = document.getElementById('projectImage');
+            if (project.iconUrl) {
+                imageContainer.innerHTML = `<img src="${project.iconUrl}" alt="${escapeHtml(project.name)}" onerror="this.parentElement.innerHTML='<div class=\\'project-image-placeholder\\'><span>📦</span><span>Нет изображения</span></div>'">`;
+            } else {
+                imageContainer.innerHTML = `<div class="project-image-placeholder"><span>📦</span><span>Нет изображения</span></div>`;
+            }
+
+            // Категория
+            document.getElementById('projectCategory').innerHTML = `${getCategoryEmoji(project.category)} ${getCategoryName(project.category)}`;
+
+            // Название
+            document.getElementById('projectTitle').textContent = project.name;
+
+            // Рейтинг и статистика
+            document.getElementById('projectRating').textContent = `⭐ ${project.rating.toFixed(1)}`;
+            document.getElementById('projectDownloads').textContent = project.downloads;
+            document.getElementById('projectDate').textContent = project.dateAdded;
+
+            // Автор
+            document.getElementById('authorAvatar').textContent = (project.author || '?')[0].toUpperCase();
+            document.getElementById('projectAuthor').textContent = project.author || 'Неизвестный автор';
+
+            // Описание
+            document.getElementById('projectDescription').textContent = project.description;
+
+            // Теги
+            const tagsContainer = document.getElementById('projectTags');
+            if (project.tags && project.tags.length > 0) {
+                tagsContainer.innerHTML = project.tags.map(tag => 
+                    `<span class="project-tag">#${escapeHtml(tag.trim())}</span>`
+                ).join('');
+            } else {
+                tagsContainer.innerHTML = '<span class="project-tag" style="opacity:0.5;">Без тегов</span>';
+            }
+
+            // Кнопка скачивания
+            const btnDownload = document.getElementById('btnDownload');
+            btnDownload.href = project.fileUrl;
+            btnDownload.setAttribute('download', project.name + '.png');
+
+            // Похожие проекты
+            loadSimilarProjects(project);
+        }
+
+        function showNotFound(message) {
+            document.getElementById('projectTitle').textContent = 'Проект не найден';
+            document.getElementById('projectDescription').textContent = message;
+            document.getElementById('btnDownload').style.display = 'none';
+            document.getElementById('btnRate').style.display = 'none';
+            document.getElementById('similarSection').style.display = 'none';
+        }
+
+        // ==================== ПОХОЖИЕ ПРОЕКТЫ ====================
+        function loadSimilarProjects(project) {
+            const grid = document.getElementById('similarGrid');
+            
+            // Заглушка — в реальности загружается из API
+            // Показываем сообщение, что похожих проектов пока нет
+            grid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--color-text-tertiary);font-size:var(--font-size-sm);">
+                    Похожие проекты появятся, когда каталог наполнится
+                </div>
+            `;
+        }
+
+        // ==================== ОЦЕНКА ====================
+        function handleRate() {
+            if (!currentUser) {
+                alert('Войдите в аккаунт, чтобы оценить проект.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const rating = prompt('Поставьте оценку от 1 до 5:', '5');
+            if (rating && !isNaN(rating) && rating >= 1 && rating <= 5) {
+                alert(`✅ Спасибо! Вы поставили ${rating} звёзд.`);
+                // В реальности — отправка рейтинга в Firebase
+            } else if (rating !== null) {
+                alert('Введите число от 1 до 5.');
+            }
+        }
+
+        // ==================== ТЕНЬ ШАПКИ ====================
+        function initHeaderShadow() {
+            const header = document.getElementById('header');
+            if (!header) return;
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY > 10);
+            }, { passive: true });
+        }
+
+        // ==================== ВСПОМОГАТЕЛЬНЫЕ ====================
+        function getCategoryName(cat) {
+            const names = {
+                'actors': 'Актёр', 'tilesets': 'Тайлсет', 'behaviors': 'Поведение',
+                'projects': 'Проект', 'packs': 'Сборка', 'stencyl': 'Установка',
+                'sounds': 'Звук', 'backgrounds': 'Фон', 'unknown': 'Другое'
+            };
+            return names[cat] || 'Другое';
+        }
+
+        function getCategoryEmoji(cat) {
+            const emojis = {
+                'actors': '👾', 'tilesets': '🗺️', 'behaviors': '🧠',
+                'projects': '📦', 'packs': '📚', 'stencyl': '🧩',
+                'sounds': '🎵', 'backgrounds': '🖼️', 'unknown': '📄'
+            };
+            return emojis[cat] || '📄';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        function init() {
+            initHeaderShadow();
+            
+            const project = getProjectFromURL();
+            renderProject(project);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
