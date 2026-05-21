@@ -567,7 +567,159 @@
             gap: 20px;
         }
 
-        /* Карточка проекта */
+        /* ==================== КАРТОЧКА УСТАНОВКИ STENCYL ==================== */
+        .stencyl-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition-slow);
+            box-shadow: var(--shadow-md);
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            animation: cardFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+            animation-delay: 0.02s;
+        }
+        .stencyl-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+            border-color: #475569;
+        }
+        .stencyl-card:active {
+            transform: translateY(-2px);
+        }
+
+        /* Декоративные элементы */
+        .stencyl-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .stencyl-card::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .stencyl-card-image {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+            z-index: 1;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .stencyl-card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 5px 14px;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            background-color: rgba(16, 185, 129, 0.9);
+            color: white;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            z-index: 1;
+            backdrop-filter: blur(4px);
+        }
+
+        .stencyl-card-body {
+            padding: 16px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .stencyl-card-title {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+            line-height: var(--line-height-tight);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .stencyl-card-description {
+            font-size: var(--font-size-sm);
+            opacity: 0.75;
+            line-height: var(--line-height-relaxed);
+            flex: 1;
+        }
+        .stencyl-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-xs);
+            opacity: 0.7;
+            flex-wrap: wrap;
+        }
+        .stencyl-card-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .stencyl-card-footer {
+            padding: 14px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        .stencyl-card-platforms {
+            display: flex;
+            gap: 8px;
+            opacity: 0.7;
+            font-size: 1.1rem;
+        }
+        .stencyl-card-download {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--color-accent);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            color: white;
+            transition: all var(--transition-fast);
+        }
+        .stencyl-card:hover .stencyl-card-download {
+            background: #3b82f6;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        /* ==================== КАРТОЧКА ПРОЕКТА ==================== */
         .card {
             background-color: var(--color-surface);
             border: 1px solid var(--color-border);
@@ -666,7 +818,6 @@
             line-height: var(--line-height-tight);
             color: var(--color-text);
             letter-spacing: var(--letter-spacing-tight);
-            /* Безопасное ограничение в 2 строки */
             max-height: 2.5em;
             overflow: hidden;
             word-break: break-word;
@@ -856,6 +1007,9 @@
             .card-footer {
                 padding: 10px 14px;
             }
+            .stencyl-card-image {
+                font-size: 2.5rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -899,7 +1053,7 @@
         }
 
         @media (prefers-contrast: high) {
-            .card {
+            .card, .stencyl-card {
                 border-width: 2px;
             }
             .filter-chip {
@@ -957,6 +1111,9 @@
                     <button class="filter-chip active" data-filter="all" role="tab" aria-selected="true">
                         Все<span class="filter-count" id="cntAll">0</span>
                     </button>
+                    <button class="filter-chip" data-filter="stencyl" role="tab" aria-selected="false">
+                        🧩 Stencyl<span class="filter-count" id="cntStencyl">1</span>
+                    </button>
                     <button class="filter-chip" data-filter="actors" role="tab" aria-selected="false">
                         👾 Актёры<span class="filter-count" id="cntActors">0</span>
                     </button>
@@ -994,6 +1151,22 @@
         let activeFilter = 'all';
         let searchQuery = '';
         let allProjects = []; // Заполняется из папок .RSF
+
+        // ==================== КАРТОЧКА УСТАНОВКИ STENCYL ====================
+        const stencylCard = {
+            id: 'stencyl-install',
+            folder: 'stencyl-install',
+            name: 'Stencyl 4.0.4',
+            description: 'Скачайте и установите последнюю версию Stencyl для Windows. macOS и Linux — скоро.',
+            category: 'stencyl',
+            author: 'Stencyl Team',
+            tags: ['stencyl', 'установка', 'windows'],
+            iconUrl: null, // Используем встроенную иконку
+            fileUrl: 'https://drive.google.com/uc?export=download&id=1t09Lj4t5ft7YCkvmlmYl7hi-RpcRdmuI',
+            rating: 5.0,
+            downloads: 9999,
+            isStencyl: true // Флаг особой карточки
+        };
 
         // ==================== FIREBASE AUTH ====================
         function handleAuthClick() {
@@ -1043,7 +1216,7 @@
                     throw new Error('Неверный формат данных от сервера');
                 }
                 
-                return data.map(project => ({
+                const projects = data.map(project => ({
                     id: project.folder.replace('.RSF', '').replace(/\s+/g, '-').toLowerCase(),
                     folder: project.folder,
                     name: project.name || project.folder.replace('.RSF', ''),
@@ -1055,35 +1228,22 @@
                     fileUrl: `/${encodeURIComponent(project.folder)}/res.png`,
                     rating: project.rating || 0,
                     downloads: project.downloads || 0,
-                    dateAdded: project.dateAdded || new Date().toISOString()
+                    isStencyl: false
                 }));
+                
+                // Добавляем карточку Stencyl в начало списка
+                return [stencylCard, ...projects];
                 
             } catch (error) {
                 console.warn('Не удалось загрузить каталог через Worker:', error.message);
                 console.info('Использую резервный список проектов');
-                return getFallbackProjects();
+                return [stencylCard, ...getFallbackProjects()];
             }
         }
 
         // Резервный список (когда Worker недоступен)
         function getFallbackProjects() {
-            // Этот список обновляется вручную при деплое
-            return [
-                // Пример структуры:
-                // {
-                //     id: 'kosmicheskiy-geroy',
-                //     folder: 'Космический герой.RSF',
-                //     name: 'Космический герой',
-                //     description: 'Анимированный персонаж для платформеров.',
-                //     category: 'actors',
-                //     author: 'Иван Петров',
-                //     tags: ['платформер', 'космос'],
-                //     iconUrl: '/Космический герой.RSF/icon.png',
-                //     fileUrl: '/Космический герой.RSF/res.png',
-                //     rating: 4.8,
-                //     downloads: 240
-                // }
-            ];
+            return [];
         }
 
         // ==================== ОТРИСОВКА КАТАЛОГА ====================
@@ -1115,17 +1275,14 @@
                 grid.innerHTML = `
                     <div class="empty-state" role="status">
                         <div class="empty-state-icon" aria-hidden="true">📭</div>
-                        <p class="empty-state-title">Каталог пока пуст</p>
+                        <p class="empty-state-title">
+                            ${activeFilter === 'stencyl' ? 'Страница Stencyl' : 'Ничего не найдено'}
+                        </p>
                         <p class="empty-state-text">
-                            ${projects.length === 0 
-                                ? 'Здесь скоро появятся первые ресурсы от сообщества. Будьте первым — поделитесь своим актёром, тайлсетом или поведением!' 
+                            ${activeFilter === 'stencyl' 
+                                ? 'Карточка установки Stencyl должна быть видна всегда.' 
                                 : 'По вашему запросу ничего не найдено. Попробуйте изменить фильтры или поисковый запрос.'}
                         </p>
-                        ${projects.length === 0 ? `
-                            <button class="empty-state-btn" onclick="window.location.href='upload.html'">
-                                ⬆️ Поделиться ресурсом
-                            </button>
-                        ` : ''}
                     </div>
                 `;
                 return;
@@ -1134,6 +1291,40 @@
             // Отрисовка карточек
             grid.innerHTML = filtered.map((project, index) => {
                 const animationDelay = Math.min(index * 0.05, 0.5);
+                
+                // Особая карточка для Stencyl
+                if (project.isStencyl) {
+                    return `
+                        <a href="${project.fileUrl}" 
+                           class="stencyl-card" 
+                           role="listitem"
+                           style="animation-delay: ${animationDelay}s;"
+                           aria-label="Скачать Stencyl 4.0.4 для Windows (102 МБ)"
+                           download>
+                            <div class="stencyl-card-image" aria-hidden="true">🧩</div>
+                            <span class="stencyl-card-badge">⚡ Установить</span>
+                            <div class="stencyl-card-body">
+                                <h3 class="stencyl-card-title">Stencyl 4.0.4</h3>
+                                <p class="stencyl-card-description">Скачайте и установите последнюю версию Stencyl для Windows. macOS и Linux — скоро.</p>
+                                <div class="stencyl-card-meta">
+                                    <span>🪟 Windows</span>
+                                    <span>💾 102 МБ</span>
+                                    <span>⭐ 5.0</span>
+                                </div>
+                            </div>
+                            <div class="stencyl-card-footer">
+                                <div class="stencyl-card-platforms">
+                                    <span title="Windows">🪟</span>
+                                    <span title="macOS (скоро)" style="opacity:0.4;">🍎</span>
+                                    <span title="Linux (скоро)" style="opacity:0.4;">🐧</span>
+                                </div>
+                                <span class="stencyl-card-download">📥 Скачать</span>
+                            </div>
+                        </a>
+                    `;
+                }
+                
+                // Обычная карточка проекта
                 const categoryEmoji = getCategoryEmoji(project.category);
                 const categoryName = getCategoryName(project.category);
                 const authorInitial = (project.author || '?')[0].toUpperCase();
@@ -1177,6 +1368,7 @@
         function updateFilterCounts(projects) {
             const counts = {
                 all: projects.length,
+                stencyl: projects.filter(p => p.category === 'stencyl').length,
                 actors: projects.filter(p => p.category === 'actors').length,
                 tilesets: projects.filter(p => p.category === 'tilesets').length,
                 behaviors: projects.filter(p => p.category === 'behaviors').length,
@@ -1186,6 +1378,7 @@
 
             const elements = {
                 all: document.getElementById('cntAll'),
+                stencyl: document.getElementById('cntStencyl'),
                 actors: document.getElementById('cntActors'),
                 tilesets: document.getElementById('cntTilesets'),
                 behaviors: document.getElementById('cntBehaviors'),
@@ -1199,38 +1392,36 @@
         }
 
         // ==================== ФИЛЬТРЫ ====================
-function initFilters() {
-    const filtersContainer = document.getElementById('filtersScroll');
-    if (!filtersContainer) return;
+        function initFilters() {
+            const filtersContainer = document.getElementById('filtersScroll');
+            if (!filtersContainer) return;
 
-    // Один обработчик на весь контейнер (делегирование)
-    // Не теряется при перерисовке, потому что контейнер не удаляется
-    filtersContainer.addEventListener('click', function(event) {
-        // Ищем ближайший чип, по которому кликнули
-        const chip = event.target.closest('.filter-chip');
-        if (!chip) return; // Клик мимо чипа — игнорируем
+            // Один обработчик на весь контейнер (делегирование)
+            filtersContainer.addEventListener('click', function(event) {
+                const chip = event.target.closest('.filter-chip');
+                if (!chip) return;
 
-        // Снимаем active со ВСЕХ чипов внутри контейнера
-        const allChips = this.querySelectorAll('.filter-chip');
-        allChips.forEach(c => {
-            c.classList.remove('active');
-            c.setAttribute('aria-selected', 'false');
-        });
+                // Снимаем active со ВСЕХ чипов внутри контейнера
+                const allChips = this.querySelectorAll('.filter-chip');
+                allChips.forEach(c => {
+                    c.classList.remove('active');
+                    c.setAttribute('aria-selected', 'false');
+                });
 
-        // Ставим active на тот, по которому кликнули
-        chip.classList.add('active');
-        chip.setAttribute('aria-selected', 'true');
+                // Ставим active на тот, по которому кликнули
+                chip.classList.add('active');
+                chip.setAttribute('aria-selected', 'true');
 
-        // Запоминаем выбранный фильтр
-        activeFilter = chip.dataset.filter;
+                // Запоминаем выбранный фильтр
+                activeFilter = chip.dataset.filter;
 
-        // Перерисовываем каталог с новым фильтром
-        renderProjects(allProjects);
+                // Перерисовываем каталог с новым фильтром
+                renderProjects(allProjects);
 
-        // Плавно прокручиваем чип в центр экрана
-        chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    });
-}
+                // Плавно прокручиваем чип в центр экрана
+                chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            });
+        }
 
         // ==================== ПОИСК ====================
         function initSearch() {
@@ -1294,8 +1485,6 @@ function initFilters() {
             const header = document.getElementById('header');
             if (!header) return;
 
-            let scrollTimeout;
-            
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 10) {
                     header.classList.add('scrolled');
@@ -1308,6 +1497,7 @@ function initFilters() {
         // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
         function getCategoryName(category) {
             const names = {
+                'stencyl': 'Установка',
                 'actors': 'Актёр',
                 'tilesets': 'Тайлсет',
                 'behaviors': 'Поведение',
@@ -1322,6 +1512,7 @@ function initFilters() {
 
         function getCategoryEmoji(category) {
             const emojis = {
+                'stencyl': '🧩',
                 'actors': '👾',
                 'tilesets': '🗺️',
                 'behaviors': '🧠',
